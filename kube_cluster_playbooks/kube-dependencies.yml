@@ -1,0 +1,76 @@
+- hosts: all  
+  become: true
+  tasks:
+  
+  ## Install Docker
+   - name: install Docker 
+     yum:
+       name: docker
+       state: present
+       update_cache: true
+
+  ## Start Docker Service
+   - name: start Docker 
+     service:
+       name: docker
+       state: started
+
+  ## Disable SELinux : Else will cause issues due to not being fully supported by kubernetes Cluster
+   - name: disable SELinux 
+     command: setenforce 0
+
+   - name: disable SELinux on reboot
+     selinux:
+       state: disabled
+  
+  ## Set up IPTables for Kubernetes Networking
+   - name: ensure net.bridge.bridge-nf-call-ip6-tables set to 1 
+     sysctl:
+      name: net.bridge.bridge-nf-call-ip6tables
+      value: 1
+      state: present
+
+   - name: ensure net.bridge.bridge-nf-call-ip-tables set to 1
+     sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: 1
+      state: present
+
+  ## Add Kubernetes YUM repository in remote server' repository list
+   - name: add Kubernetes' YUM repository 
+     yum_repository:
+      name: Kubernetes
+      description: Kubernetes YUM repository
+      baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+      gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+      gpgcheck: yes
+
+  ## Install Kubelet
+   - name: install kubelet 
+     yum:
+        name: kubelet-1.14.0
+        state: present
+        update_cache: true
+
+  ## Install Kubeadm
+   - name: install kubeadm 
+     yum:
+        name: kubeadm-1.14.0
+        state: present
+
+  ## Start Kubelet Service
+   - name: start kubelet 
+     service:
+       name: kubelet
+       enabled: yes
+       state: started
+
+  ## Install Kubectl on Master Node
+- hosts: master
+  become: true
+  tasks:
+   - name: install kubectl 
+     yum:
+        name: kubectl-1.14.0
+        state: present
+        allow_downgrade: yes
