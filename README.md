@@ -288,14 +288,19 @@ The output shows active Kubernetes master and 3 nodes in a cluster READY
 
 ```bash 
 NAME     STATUS   ROLES    AGE   VERSION
-master   Ready    master   3m   v1.14.0
-node1    Ready    <none>   3m   v1.14.0
-node2    Ready    <none>   3m   v1.14.0
-node3    Ready    <none>   3m   v1.14.0
+master   Ready    master   2m 54s   v1.14.0
+node1    Ready    <none>   3m 21s   v1.14.0
+node2    Ready    <none>   3m 34s   v1.14.0
+node3    Ready    <none>   3m 22s   v1.14.0
 ```
 On this Kubernetes cluster, I will install Jenkins with 1 master and 2 nodes on top of Kubernetes and let Kubernetes orchestrate the Jenkins server
 
 ## Jenkins Installation on Kubernetes
+
+### 1. Create jenkins namespace
+```bash
+kubectl create namespace jenkins
+```
 ### 1. Create jenkins-deployment.yml
 ```bash
 apiVersion: extensions/v1beta1
