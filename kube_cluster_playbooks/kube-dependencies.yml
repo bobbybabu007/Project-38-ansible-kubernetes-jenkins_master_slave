@@ -1,7 +1,13 @@
 - hosts: all  
   become: true
   tasks:
-  
+
+  ## Install GIT
+   - name: install Git 
+     yum:
+       name: git
+       state: present
+
   ## Install Docker
    - name: install Docker 
      yum:
